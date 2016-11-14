@@ -20,15 +20,16 @@ Q.config({
 });
 
 function call(data, endpoint, action) {
-    data = {
+    let xml = x2js.js2xml({
         'S:Envelope': {
             '_xmlns:S': 'http://schemas.xmlsoap.org/soap/envelope/',
             'S:Body': data,
         },
-    };
+    });
+    console.log(xml);
     return Q.resolve(req
         .post(root + endpoint)
-        .send(x2js.js2xml(data))
+        .send(xml)
         .set('Content-Type', 'text/xml')
         .set('SOAPAction', action)
     ).catch(function (err) {
@@ -191,7 +192,7 @@ module.exports = {
         ).then(function (result) {
             console.log(result);
             return result.body.Notifier;
-        });     
+        });
     },
     AttnotifyFE: function (cedente, pass,identificativoSdI){
         let data = {
@@ -211,7 +212,7 @@ module.exports = {
         ).then(function (result) {
             console.log(result);
             return result.body.AttNotifier;
-        });     
+        });
     },
     download: function(cedente, pass, progressivoInvio, progressivoRicezione) {
         let data = {
