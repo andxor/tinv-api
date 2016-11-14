@@ -51,18 +51,22 @@ function call(data, endpoint, action) {
     });
 }
 
+function auth(cedente, pass) {
+    return {
+        'Cedente': {
+            'IdPaese': 'IT',
+            'IdCodice': cedente,
+        },
+        'Password': pass,
+    };
+}
+
 module.exports = {
     list: function (cedente, pass) {
         let data = {
             'F:Filter': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
             },
         };
         return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/ElencoFatture"'
@@ -83,13 +87,7 @@ module.exports = {
     listPassive: function (cedente, pass, arch, inizio, fine) {
         let data =  {
             '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-            'Autenticazione': {
-                'Cedente': {
-                    'IdPaese': 'IT',
-                    'IdCodice': cedente,
-                },
-                'Password': pass,
-            },
+            'Autenticazione': auth(cedente, pass),
             'IncludiArchiviate': arch,
         };
         if (inizio) data.DataInizio = inizio.substr(0, 10);
@@ -114,13 +112,7 @@ module.exports = {
     send: function (cedente, pass, destinatario, committente, body) {
         let data = {
             '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-            'Autenticazione': {
-                'Cedente': {
-                    'IdPaese': 'IT',
-                    'IdCodice': cedente,
-                },
-                'Password': pass,
-            },
+            'Autenticazione': auth(cedente, pass),
         };
         if (destinatario.indexOf('@') < 0)
             data.CodiceDestinatario = destinatario;
@@ -139,13 +131,7 @@ module.exports = {
         let data = {
             'F:CambioPassword': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'NuovaPassword': newpassw,
             },
         };
@@ -158,13 +144,7 @@ module.exports = {
         let data = {
             'F:ImpostaFirma': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'Alias': alias,
                 'Password': newpassw,
             },
@@ -174,17 +154,11 @@ module.exports = {
             return result.body.FirmaImpostata;
         });
     },
-    notifyFE: function (cedente, pass,identificativoSdI){
+    notifyFE: function (cedente, pass, identificativoSdI){
         let data = {
             'F:PasvNotifyFE': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'IdentificativoSdI': identificativoSdI,
             },
         };
@@ -198,13 +172,7 @@ module.exports = {
         let data = {
             'F:NotifyFE': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'IdentificativoSdI': identificativoSdI,
             },
         };
@@ -218,13 +186,7 @@ module.exports = {
         let data = {
             'F:Query': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'ProgressivoInvio' : progressivoInvio,
                 'ProgressivoRicezione' : progressivoRicezione,
             },
@@ -238,13 +200,7 @@ module.exports = {
         let data = {
             'F:PasvQuery': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'IdentificativoSdI' : IdentificativoSdI,
                 'Unwrap': (unwrap === true),
             },
@@ -258,13 +214,7 @@ module.exports = {
         let data = {
             'F:ZipQuery': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'ProgressivoInvio' : progressivoInvio,
             },
         };
@@ -277,13 +227,7 @@ module.exports = {
         let data = {
             'F:PasvZipQuery': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'IdentificativoSdI' : IdentificativoSdI,
             },
         };
@@ -296,13 +240,7 @@ module.exports = {
         let data = {
             'F:Accept': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'IdentificativoSdI': identificativoSdI,
                 'Accepted': accepted,
                 'Description': description,
@@ -319,13 +257,7 @@ module.exports = {
         let data = {
             'F:Store': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': {
-                    'Cedente': {
-                        'IdPaese': 'IT',
-                        'IdCodice': cedente,
-                    },
-                    'Password': pass,
-                },
+                'Autenticazione': auth(cedente, pass),
                 'IdentificativoSdI': identificativoSdI,
             },
         };
