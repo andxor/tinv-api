@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "description": "Wrapper around FatturaPA web services",
   "main": "index.js",
-  "homepage": "https://github.com/andxor/tdoc-api",
+  "homepage": "https://github.com/andxor/fatturapa-api",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andxor/tdoc-api.git"
+    "url": "https://github.com/andxor/fatturapa-api.git"
   },
   "engines": {
     "node": ">=4.3.2"
@@ -16,19 +16,10 @@
     "superagent": "^2.3.0",
     "x2js": "^3.0.1"
   },
-  "devDependencies": {
-    "tap-spec": "^4.1.1",
-    "tape": "^4.6.2",
-    "tape-nock": "^1.2.2"
-  },
   "files": [
-    "index.js",
-    "lib/promise.js"
+    "index.js"
   ],
-  "scripts": {
-    "test": "node test/test.js local | tap-spec"
-  },
-  "bugs": "https://github.com/andxor/tdoc-api/issues",
+  "bugs": "https://github.com/andxor/fatturapa-api/issues",
   "author": "Lapo Luchini <l.luchini@andxor.it>",
   "license": "ISC",
   "private": true
