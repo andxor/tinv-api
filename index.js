@@ -9,8 +9,7 @@ const
     util = require('util'),
     Q = require('bluebird'),
     req = require('superagent'),
-    x2js = new (require('x2js'))(),
-    root = 'http://lapo.andxor.it/fatturapa/';
+    x2js = new (require('x2js'))();
 
 Q.config({
     warnings: true,
@@ -19,57 +18,57 @@ Q.config({
     monitoring: false,
 });
 
-function call(data, endpoint, action) {
-    let xml = x2js.js2xml({
-        'S:Envelope': {
-            '_xmlns:S': 'http://schemas.xmlsoap.org/soap/envelope/',
-            'S:Body': data,
-        },
-    });
-    console.log(xml);
-    return Q.resolve(req
-        .post(root + endpoint)
-        .send(xml)
-        .set('Content-Type', 'text/xml')
-        .set('SOAPAction', action)
-    ).catch(function (err) {
-        if (err.status == 404)
-            throw new Error('The configured WSDL endpoint does not exist.');
-        let t;
-        try {
-            const xml = x2js.xml2js(err.response.text);
-            t = new Error(xml.Envelope.Body.Fault.faultstring);
-        } catch (e) {
-            t = new Error('Server error (status=' + err.status + ').');
-        }
-        throw t;
-    }).then(function (resp) {
-        const xml = x2js.xml2js(resp.text);
-        return {
-            body: xml.Envelope.Body
-        };
-    });
-}
-
-function auth(cedente, pass) {
-    return {
+function FatturaPA(address, cedente, password) {
+    this.root = address;
+    this.auth = {
         'Cedente': {
             'IdPaese': 'IT',
             'IdCodice': cedente,
         },
-        'Password': pass,
+        'Password': password,
     };
 }
 
-module.exports = {
-    list: function (cedente, pass) {
+FatturaPA.prototype = {
+    service: function(data, endpoint, action) {
+        let xml = x2js.js2xml({
+            'S:Envelope': {
+                '_xmlns:S': 'http://schemas.xmlsoap.org/soap/envelope/',
+                'S:Body': data,
+            },
+        });
+        //console.log(xml);
+        return Q.resolve(req
+            .post(this.root + endpoint)
+            .send(xml)
+            .set('Content-Type', 'text/xml')
+            .set('SOAPAction', action)
+        ).catch(function (err) {
+            if (err.status == 404)
+                throw new Error('The configured WSDL endpoint does not exist.');
+            let t;
+            try {
+                const xml = x2js.xml2js(err.response.text);
+                t = new Error(xml.Envelope.Body.Fault.faultstring);
+            } catch (e) {
+                t = new Error('Server error (status=' + err.status + ').');
+            }
+            throw t;
+        }).then(function (resp) {
+            const xml = x2js.xml2js(resp.text);
+            return {
+                body: xml.Envelope.Body
+            };
+        });
+    },
+    list: function () {
         let data = {
             'F:Filter': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': auth(cedente, pass),
+                'Autenticazione': this.auth,
             },
         };
-        return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/ElencoFatture"'
+        return this.service(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/ElencoFatture"'
         ).then(function (result) {
             let f = result.body.Fatture;
             if (!f.Fattura) // no value
@@ -84,16 +83,16 @@ module.exports = {
             return array;
         });
     },
-    listPassive: function (cedente, pass, arch, inizio, fine) {
+    listPassive: function (arch, inizio, fine) {
         let data =  {
             '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-            'Autenticazione': auth(cedente, pass),
-            'IncludiArchiviate': arch,
+            'Autenticazione': this.auth,
+            'IncludiArchiviate': arch ? 'true' : 'false',
         };
         if (inizio) data.DataInizio = inizio.substr(0, 10);
         if (fine)   data.DataFine   = fine.substr(0, 10);
         data = {'F:PasvFilter': data};
-        return call(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/ElencoFatture"'
+        return this.service(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/ElencoFatture"'
         ).then(function (result) {
             let f = result.body.PasvFatture;
             if (!f.Fattura) // no value
@@ -109,10 +108,10 @@ module.exports = {
             return array;
         });
     },
-    send: function (cedente, pass, destinatario, committente, body) {
+    send: function (destinatario, committente, body) {
         let data = {
             '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-            'Autenticazione': auth(cedente, pass),
+            'Autenticazione': this.auth,
         };
         if (destinatario.indexOf('@') < 0)
             data.CodiceDestinatario = destinatario;
@@ -122,149 +121,154 @@ module.exports = {
         data.FatturaElettronicaBody = body;
         data = { 'F:Fattura': data };
         console.log('Sending:', data);
-        return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/InviaFattura"'
+        return this.service(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/InviaFattura"'
         ).then(function (result) {
             return result.body.ProgressivoInvio.toString();
         });
     },
-    changePassword: function (cedente, pass, newpassw) {
+    changePassword: function (newpassw) {
         let data = {
             'F:CambioPassword': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': auth(cedente, pass),
+                'Autenticazione': this.auth,
                 'NuovaPassword': newpassw,
             },
         };
-        return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/CambiaPassword"'
+        return this.service(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/CambiaPassword"'
         ).then(function (result) {
-            return result.body.PasswordCambiata.toString() == 'true';
+            return result.body.PasswordCambiata.toString() === 'true';
         });
     },
-    setSignature: function (cedente, pass, alias, newpassw) {
+    setSignature: function (alias, newpassw) {
         let data = {
             'F:ImpostaFirma': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': auth(cedente, pass),
+                'Autenticazione': this.auth,
                 'Alias': alias,
                 'Password': newpassw,
             },
         };
-        return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/ImpostaFirma"'
+        return this.service(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/ImpostaFirma"'
         ).then(function (result) {
             return result.body.FirmaImpostata;
         });
     },
-    notifyFE: function (cedente, pass, identificativoSdI){
+    notifyFE: function (identificativoSdI) {
         let data = {
             'F:PasvNotifyFE': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': auth(cedente, pass),
+                'Autenticazione': this.auth,
                 'IdentificativoSdI': identificativoSdI,
             },
         };
-        return call(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/NotificaFE"'
+        return this.service(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/NotificaFE"'
         ).then(function (result) {
             console.log(result);
             return result.body.Notifier;
         });
     },
-    AttnotifyFE: function (cedente, pass,identificativoSdI){
+    AttnotifyFE: function (identificativoSdI) {
         let data = {
             'F:NotifyFE': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': auth(cedente, pass),
+                'Autenticazione': this.auth,
                 'IdentificativoSdI': identificativoSdI,
             },
         };
-        return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/AttNotificaFE"'
+        return this.service(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/AttNotificaFE"'
         ).then(function (result) {
             console.log(result);
             return result.body.AttNotifier;
         });
     },
-    download: function(cedente, pass, progressivoInvio, progressivoRicezione) {
+    download: function(progressivoInvio, progressivoRicezione) {
         let data = {
             'F:Query': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': auth(cedente, pass),
-                'ProgressivoInvio' : progressivoInvio,
-                'ProgressivoRicezione' : progressivoRicezione,
+                'Autenticazione': this.auth,
+                'ProgressivoInvio': progressivoInvio,
+                'ProgressivoRicezione': progressivoRicezione,
             },
         };
-        return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/Download"'
+        return this.service(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/Download"'
         ).then(function (result) {
             return result.body.XML;
         });
     },
-    pasvDownload: function(cedente, pass, IdentificativoSdI, unwrap) {
+    pasvDownload: function(IdentificativoSdI, posizione, unwrap) {
         let data = {
             'F:PasvQuery': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': auth(cedente, pass),
-                'IdentificativoSdI' : IdentificativoSdI,
-                'Unwrap': (unwrap === true),
+                'Autenticazione': this.auth,
+                'IdentificativoSdI': IdentificativoSdI,
+                'Posizione': posizione,
+                'Unwrap': unwrap ? 'true' : 'false',
             },
         };
-        return call(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/Download"'
+        if (!posizione)
+            delete data['F:PasvQuery'].Posizione;
+        return this.service(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/Download"'
         ).then(function (result) {
             return result.body.PasvXML;
         });
     },
-    downloadZip: function(cedente, pass, progressivoInvio) {
+    downloadZip: function(progressivoInvio) {
         let data = {
             'F:ZipQuery': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
-                'Autenticazione': auth(cedente, pass),
-                'ProgressivoInvio' : progressivoInvio,
+                'Autenticazione': this.auth,
+                'ProgressivoInvio': progressivoInvio,
             },
         };
-        return call(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/DownloadZip"'
+        return this.service(data, 'invoiceReceiver', '"http://www.fatturapa.it/GatewayInviaFatture/DownloadZip"'
         ).then(function (result) {
             return result.body.ZIP;
         });
     },
-    pasvDownloadZip: function(cedente, pass, IdentificativoSdI) {
+    pasvDownloadZip: function(IdentificativoSdI) {
         let data = {
             'F:PasvZipQuery': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': auth(cedente, pass),
-                'IdentificativoSdI' : IdentificativoSdI,
+                'Autenticazione': this.auth,
+                'IdentificativoSdI': IdentificativoSdI,
             },
         };
-        return call(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/DownloadZip"'
+        return this.service(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/DownloadZip"'
         ).then(function (result) {
             return result.body.PasvZIP;
         });
     },
-    accept: function (cedente, pass, identificativoSdI, accepted, description) {
+    accept: function (identificativoSdI, accepted, description) {
         let data = {
             'F:Accept': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': auth(cedente, pass),
+                'Autenticazione': this.auth,
                 'IdentificativoSdI': identificativoSdI,
                 'Accepted': accepted,
                 'Description': description,
             },
         };
-        return call(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/Accept"'
+        return this.service(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/Accept"'
         ).then(function (result) {
             console.log('Dati Passati: ' + result.status);
             console.log(result);
             return result.body.Accepted;
         });
     },
-    store: function (cedente, pass, identificativoSdI) {
+    store: function (identificativoSdI) {
         let data = {
             'F:Store': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
-                'Autenticazione': auth(cedente, pass),
+                'Autenticazione': this.auth,
                 'IdentificativoSdI': identificativoSdI,
             },
         };
-        return call(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/Store"'
+        return this.service(data, 'invoicePassive', '"http://www.fatturapa.it/GatewayFatturePassive/Store"'
         ).then(function (result) {
             console.log(result);
             return result.body.Stored;
         });
     }
 };
+
+module.exports = FatturaPA;
