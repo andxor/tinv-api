@@ -30,6 +30,12 @@ function FatturaPA(address, cedente, password) {
 }
 
 FatturaPA.prototype = {
+    js2xml: function (js) {
+        return x2js.js2xml(js);
+    },
+    xml2js: function (xml) {
+        return x2js.xml2js(xml);
+    },
     service: function(data, endpoint, action) {
         let xml = x2js.js2xml({
             'S:Envelope': {
