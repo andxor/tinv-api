@@ -7,16 +7,9 @@
 
 const
     util = require('util'),
-    Q = require('bluebird'),
+    Bluebird = require('bluebird'),
     req = require('superagent'),
     x2js = new (require('x2js'))();
-
-Q.config({
-    warnings: true,
-    longStackTraces: true,
-    cancellation: false,
-    monitoring: false,
-});
 
 function FatturaPA(address, cedente, password) {
     this.root = address;
@@ -28,6 +21,15 @@ function FatturaPA(address, cedente, password) {
         'Password': password,
     };
 }
+
+FatturaPA.Promise = Bluebird.getNewLibraryCopy();
+
+FatturaPA.Promise.config({
+    warnings: true,
+    longStackTraces: true,
+    cancellation: false,
+    monitoring: false,
+});
 
 FatturaPA.prototype = {
     js2xml: function (js) {
@@ -48,7 +50,7 @@ FatturaPA.prototype = {
                 },
             });
         //console.log(xml);
-        return Q.resolve(req
+        return FatturaPA.Promise.resolve(req
             .post(path)
             .send(xml)
             .set('Content-Type', 'text/xml')
