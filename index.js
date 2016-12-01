@@ -83,7 +83,7 @@ FatturaPA.prototype = {
             let f = result.body.Fatture;
             if (!f.Fattura) // no value
                 return [];
-            if (f.Fattura.length) // arrays of values
+            if (Array.isArray(f.Fattura))
                 return f.Fattura;
             return [f.Fattura]; // single value
         }).then(function (array) {
@@ -107,7 +107,7 @@ FatturaPA.prototype = {
             let f = result.body.PasvFatture;
             if (!f.Fattura) // no value
                 return [];
-            if (f.Fattura.length) // arrays of values
+            if (Array.isArray(f.Fattura))
                 return f.Fattura;
             return [f.Fattura]; // single value
         }).then(function (array) {
