@@ -21,6 +21,5 @@
   ],
   "bugs": "https://github.com/andxor/fatturapa-api/issues",
   "author": "Lapo Luchini <l.luchini@andxor.it>",
-  "license": "ISC",
-  "private": true
+  "license": "ISC"
 }
