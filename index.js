@@ -165,12 +165,13 @@ FatturaPA.prototype = {
             return result.body.FirmaImpostata;
         });
     },
-    notifyFE: function (identificativoSdI) {
+    notifyFE: function (identificativoSdI, posizione) {
         let data = {
             'F:PasvNotifyFE': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
                 'Autenticazione': this.auth,
                 'IdentificativoSdI': identificativoSdI,
+                'Posizione': posizione,
             },
         };
         return this.service(data, 'P', 'NotificaFE'
