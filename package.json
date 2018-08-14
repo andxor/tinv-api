@@ -12,9 +12,9 @@
     "node": ">=4.3.2"
   },
   "dependencies": {
-    "bluebird": "^3.4.1",
-    "superagent": "^2.3.0",
-    "x2js": "^3.0.1"
+    "bluebird": "^3.5.1",
+    "superagent": "^3.8.3",
+    "x2js": "^3.2.1"
   },
   "files": [
     "index.js"
