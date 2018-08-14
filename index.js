@@ -194,7 +194,7 @@ FatturaPA.prototype = {
             return result.body.AttNotifier;
         });
     },
-    download: function(progressivoInvio, progressivoRicezione) {
+    download: function(progressivoInvio, progressivoRicezione, minimal) {
         let data = {
             'F:Query': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/wsdl',
@@ -203,12 +203,14 @@ FatturaPA.prototype = {
                 'ProgressivoRicezione': progressivoRicezione,
             },
         };
+        if (minimal)
+            data['F:Query'].Minimal = 'true';
         return this.service(data, 'A', 'Download'
         ).then(function (result) {
             return result.body.XML;
         });
     },
-    pasvDownload: function(IdentificativoSdI, posizione, unwrap) {
+    pasvDownload: function(IdentificativoSdI, posizione, unwrap, minimal) {
         let data = {
             'F:PasvQuery': {
                 '_xmlns:F': 'http://www.andxor.com/fatturapa/passive/wsdl',
@@ -220,6 +222,8 @@ FatturaPA.prototype = {
         };
         if (!posizione)
             delete data['F:PasvQuery'].Posizione;
+        if (minimal)
+            data['F:PasvQuery'].Minimal = 'true';
         return this.service(data, 'P', 'Download'
         ).then(function (result) {
             return result.body.PasvXML;
