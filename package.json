@@ -21,5 +21,9 @@
   ],
   "bugs": "https://github.com/andxor/fatturapa-api/issues",
   "author": "Lapo Luchini <l.luchini@andxor.it>",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bluebird": "^3.5.23",
+    "@types/superagent": "^3.8.4"
+  }
 }
