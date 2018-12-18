@@ -55,6 +55,17 @@ FatturaPA.prototype = {
             throw new Error('Server error (status=' + err.status + ').');
         }).then(r => r.body);
     },
+    serviceBuf: function(data, path) {
+        return FatturaPA.Promise.resolve(req
+            .post(this.root + path)
+            .buffer(true).parse(req.parse.image) // necessary to have resp.body as a Buffer
+            .send(data)
+        ).catch(function (err) {
+            if (err.status == 404)
+                throw new Error('The configured REST endpoint does not exist.');
+            throw new Error('Server error (status=' + err.status + ').');
+        }).then(r => r.body);
+    },
     list: function (inizio, fine) {
         let data = {
             'Autenticazione': this.auth,
@@ -144,50 +155,53 @@ FatturaPA.prototype = {
         let data = {
             'Autenticazione': this.auth,
             'ProgressivoInvio': progressivoInvio,
-            'ProgressivoRicezione': progressivoRicezione,
         };
+        if (progressivoRicezione)
+            data.ProgressivoRicezione = progressivoRicezione;
         if (minimal)
             data.Minimal = true;
-        return this.service(data, 'A', 'Download'
-        ).then(function (result) {
-            return result.body.XML;
-        });
+        return this.serviceBuf(data, 'active/download/file');
     },
     pasvDownload: function(IdentificativoSdI, posizione, unwrap, minimal) {
         let data = {
             'Autenticazione': this.auth,
             'IdentificativoSdI': IdentificativoSdI,
-            'Posizione': posizione,
-            'Unwrap': !!unwrap,
         };
-        if (!posizione)
-            delete data['F:PasvQuery'].Posizione;
+        if (posizione)
+            data.Posizione = posizione;
+        if (unwrap)
+            data.Unwrap = true;
         if (minimal)
-            data['F:PasvQuery'].Minimal = 'true';
-        return this.service(data, 'P', 'Download'
-        ).then(function (result) {
-            return result.body.PasvXML;
-        });
+            data.Minimal = true;
+        return this.serviceBuf(data, 'passive/download/file');
     },
-    downloadZip: function(progressivoInvio) {
+    downloadZIP: function(progressivoInvio) {
         let data = {
             'Autenticazione': this.auth,
             'ProgressivoInvio': progressivoInvio,
         };
-        return this.service(data, 'A', 'DownloadZip'
-        ).then(function (result) {
-            return result.body.ZIP;
-        });
+        return this.serviceBuf(data, 'active/downloadZIP/file');
     },
-    pasvDownloadZip: function(IdentificativoSdI) {
+    pasvDownloadZIP: function(IdentificativoSdI) {
         let data = {
             'Autenticazione': this.auth,
             'IdentificativoSdI': IdentificativoSdI,
         };
-        return this.service(data, 'P', 'DownloadZip'
-        ).then(function (result) {
-            return result.body.PasvZIP;
-        });
+        return this.serviceBuf(data, 'passive/downloadZIP/file');
+    },
+    downloadPDF: function(progressivoInvio) {
+        let data = {
+            'Autenticazione': this.auth,
+            'ProgressivoInvio': progressivoInvio,
+        };
+        return this.serviceBuf(data, 'active/downloadPDF/file');
+    },
+    pasvDownloadPDF: function(IdentificativoSdI) {
+        let data = {
+            'Autenticazione': this.auth,
+            'IdentificativoSdI': IdentificativoSdI,
+        };
+        return this.serviceBuf(data, 'passive/downloadPDF/file');
     },
     accept: function (identificativoSdI, accepted, description) {
         let data = {

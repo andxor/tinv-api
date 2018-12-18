@@ -41,7 +41,7 @@ test('passive/list', function (t) {
         t.deepEqual(docs.map(f => f.IdentificativoSdI),
             [9485216, 9485268, 9485342, 9485724, 9491938],
             'documents ids');
-        const dataPrimo = new Date(docs[0].DataOraRicezione);
+        const dataPrimo = docs[0].DataOraRicezione;
         return tinv.listPassive(true, dataPrimo, dataPrimo);
     }).then(function (docs) {
         t.equal(docs.length, 1, 'date range is inclusive');
@@ -50,6 +50,27 @@ test('passive/list', function (t) {
         return tinv.listPassive(true, dataFalsa, dataFalsa);
     }).then(function (docs) {
         t.equal(docs.length, 0, 'empty value uses array');
+    }).catch(function (err) {
+        t.fail(err);
+    }).finally(function () {
+        t.end();
+    });
+});
+
+
+test('passive/download', function (t) {
+    tinv.pasvDownload(9485216, null, true /* unwrap P7S */
+    ).then(function (doc) {
+        t.equal(doc.length, 4470, 'XML length');
+        t.equal(doc.slice(0, 36).toString('ascii'), '<?xml version="1.0" encoding="UTF-8"', 'XML value');
+        return tinv.pasvDownloadZIP(9485216);
+    }).then(function (doc) {
+        t.equal(doc.length, 2860, 'ZIP length');
+        t.equal(doc.slice(0, 4).toString('hex'), '504b0304', 'ZIP header');
+        return tinv.pasvDownloadPDF(9485216);
+    }).then(function (doc) {
+        t.equal(doc.length, 5747, 'PDF length');
+        t.equal(doc.slice(0, 10).toString('ascii'), '%PDF-1.5\n%', 'PDF header');
     }).catch(function (err) {
         t.fail(err);
     }).finally(function () {
