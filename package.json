@@ -1,7 +1,7 @@
 {
   "name": "fatturapa-api",
-  "version": "0.1.1",
-  "description": "Wrapper around FatturaPA web services",
+  "version": "0.2.0",
+  "description": "Wrapper around TInv (FatturaPA & B2B) web services",
   "main": "index.js",
   "homepage": "https://github.com/andxor/fatturapa-api",
   "repository": {
@@ -12,14 +12,43 @@
     "node": ">=4.3.2"
   },
   "dependencies": {
-    "bluebird": "^3.5.1",
-    "superagent": "^3.8.3",
-    "x2js": "^3.2.1"
+    "bluebird": "^3.5.3",
+    "superagent": "^4.0.0"
+  },
+  "devDependencies": {
+    "tap-spec": "^5.0.0",
+    "tape": "^4.9.1",
+    "tape-nock": "^1.6.0"
   },
   "files": [
     "index.js"
   ],
   "bugs": "https://github.com/andxor/fatturapa-api/issues",
   "author": "Lapo Luchini <l.luchini@andxor.it>",
-  "license": "ISC"
+  "license": "ISC",
+  "scripts": {
+    "test": "node test/test.js local | tap-spec",
+    "test-update": "rm -rf test/nock ; node test/test.js | tap-spec"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 6
+    },
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "eslint:recommended"
+    ],
+    "rules": {
+      "strict": [ "error", "global" ],
+      "indent": [ "warn", 4 ],
+      "linebreak-style": [ "warn", "unix" ],
+      "quotes": [ "warn", "single" ],
+      "semi": [ "warn", "always" ],
+      "comma-dangle": [ "error", "always-multiline" ],
+      "no-trailing-spaces": "warn",
+      "no-unused-vars": "warn"
+    }
+  }
 }
