@@ -6,7 +6,8 @@
 
 const
     Bluebird = require('bluebird'),
-    req = require('superagent');
+    req = require('superagent'),
+    reFilename = /filename="?([^"]+)"?/;
 
 function FatturaPA(address, cedente, password) {
     this.root = address + 'userREST/';
@@ -64,7 +65,15 @@ FatturaPA.prototype = {
             if (err.status == 404)
                 throw new Error('The configured REST endpoint does not exist.');
             throw new Error('Server error (status=' + err.status + ').');
-        }).then(r => r.body);
+        }).then(r => {
+            const disp = r.header['content-disposition'];
+            if (disp) {
+                const m = reFilename.exec(disp);
+                if (m)
+                    r.body.filename = m[1];
+            }
+            return r.body;
+        });
     },
     list: function (start, end, limit) {
         let data = {
