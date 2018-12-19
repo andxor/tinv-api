@@ -164,10 +164,10 @@ FatturaPA.prototype = {
             data.Minimal = true;
         return this.serviceBuf(data, 'active/download/file');
     },
-    pasvDownload: function(IdentificativoSdI, posizione, unwrap, minimal) {
+    pasvDownload: function(identificativoSdI, posizione, unwrap, minimal) {
         let data = {
             'Autenticazione': this.auth,
-            'IdentificativoSdI': IdentificativoSdI,
+            'IdentificativoSdI': identificativoSdI,
         };
         if (posizione)
             data.Posizione = posizione;
@@ -184,10 +184,10 @@ FatturaPA.prototype = {
         };
         return this.serviceBuf(data, 'active/downloadZIP/file');
     },
-    pasvDownloadZIP: function(IdentificativoSdI) {
+    pasvDownloadZIP: function(identificativoSdI) {
         let data = {
             'Autenticazione': this.auth,
-            'IdentificativoSdI': IdentificativoSdI,
+            'IdentificativoSdI': identificativoSdI,
         };
         return this.serviceBuf(data, 'passive/downloadZIP/file');
     },
@@ -198,10 +198,10 @@ FatturaPA.prototype = {
         };
         return this.serviceBuf(data, 'active/downloadPDF/file');
     },
-    pasvDownloadPDF: function(IdentificativoSdI) {
+    pasvDownloadPDF: function(identificativoSdI, posizione) {
         let data = {
             'Autenticazione': this.auth,
-            'IdentificativoSdI': IdentificativoSdI,
+            'IdentificativoSdI': identificativoSdI,
         };
         return this.serviceBuf(data, 'passive/downloadPDF/file');
     },
