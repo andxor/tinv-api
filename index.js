@@ -32,7 +32,7 @@ function massage(json) {
     for (const k in json) {
         const val = json[k],
             type = typeof val;
-        if (type == 'object')
+        if (type == 'object' && val !== null)
             json[k] = massage(val);
         else if (type == 'number' && k.startsWith('Data'))
             json[k] = new Date(val);
@@ -53,7 +53,7 @@ FatturaPA.prototype = {
             if ('error' in err.response.body)
                 throw new Error(err.response.body.error);
             throw new Error('Server error (status=' + err.status + ').');
-        }).then(r => r.body);
+        }).then(r => massage(r.body));
     },
     serviceBuf: function(data, path) {
         return FatturaPA.Promise.resolve(req

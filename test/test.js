@@ -19,6 +19,7 @@ test('active/list', function (t) {
             ['0000k', '0000f', '0000d', '00009', '00006', '00005'],
             'documents ids');
         const dataPrimo = docs[0].DataOraCreazione;
+        t.assert(dataPrimo instanceof Date, 'dates are objects');
         return tinv.list(dataPrimo, dataPrimo);
     }).then(function (docs) {
         t.equal(docs.length, 1, 'date range is inclusive');
