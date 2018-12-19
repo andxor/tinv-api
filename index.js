@@ -70,8 +70,8 @@ FatturaPA.prototype = {
         let data = {
             'Autenticazione': this.auth,
         };
-        if (inizio) data.DataInizio = inizio;
-        if (fine)   data.DataFine   = fine;
+        if (inizio != null) data.DataInizio = inizio;
+        if (fine != null)   data.DataFine   = fine;
         return this.service(data, 'active/list'
         ).then(f => f.Fattura);
     },
@@ -80,8 +80,8 @@ FatturaPA.prototype = {
             'Autenticazione': this.auth,
             'IncludiArchiviate': !!arch,
         };
-        if (inizio) data.DataInizio = inizio;
-        if (fine)   data.DataFine   = fine;
+        if (inizio != null) data.DataInizio = inizio;
+        if (fine != null)   data.DataFine   = fine;
         return this.service(data, 'passive/list'
         ).then(f => f.Fattura);
     },

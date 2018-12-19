@@ -23,7 +23,7 @@ test('active/list', function (t) {
     }).then(function (docs) {
         t.equal(docs.length, 1, 'date range is inclusive');
         t.equal(docs[0].ProgressivoInvio, '0000k', 'correct document');
-        const dataFalsa = new Date(0);
+        const dataFalsa = 0;
         return tinv.list(dataFalsa, dataFalsa);
     }).then(function (docs) {
         t.equal(docs.length, 0, 'empty value uses array');
@@ -46,7 +46,7 @@ test('passive/list', function (t) {
     }).then(function (docs) {
         t.equal(docs.length, 1, 'date range is inclusive');
         t.equal(docs[0].IdentificativoSdI, 9485216, 'correct document');
-        const dataFalsa = new Date(0);
+        const dataFalsa = 0;
         return tinv.listPassive(true, dataFalsa, dataFalsa);
     }).then(function (docs) {
         t.equal(docs.length, 0, 'empty value uses array');
