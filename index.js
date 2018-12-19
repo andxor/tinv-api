@@ -203,6 +203,8 @@ FatturaPA.prototype = {
             'Autenticazione': this.auth,
             'IdentificativoSdI': identificativoSdI,
         };
+        if (posizione)
+            data.Posizione = posizione;
         return this.serviceBuf(data, 'passive/downloadPDF/file');
     },
     accept: function (identificativoSdI, accepted, description) {
