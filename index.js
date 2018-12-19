@@ -66,22 +66,24 @@ FatturaPA.prototype = {
             throw new Error('Server error (status=' + err.status + ').');
         }).then(r => r.body);
     },
-    list: function (inizio, fine) {
+    list: function (start, end, limit) {
         let data = {
             'Autenticazione': this.auth,
         };
-        if (inizio != null) data.DataInizio = inizio;
-        if (fine != null)   data.DataFine   = fine;
+        if (start != null) data.DataInizio = start;
+        if (end != null)   data.DataFine   = end;
+        if (limit != null) data.Limite     = limit;
         return this.service(data, 'active/list'
         ).then(f => f.Fattura);
     },
-    listPassive: function (arch, inizio, fine) {
+    listPassive: function (arch, start, end, limit) {
         let data =  {
             'Autenticazione': this.auth,
             'IncludiArchiviate': !!arch,
         };
-        if (inizio != null) data.DataInizio = inizio;
-        if (fine != null)   data.DataFine   = fine;
+        if (start != null) data.DataInizio = start;
+        if (end != null)   data.DataFine   = end;
+        if (limit != null) data.Limite     = limit;
         return this.service(data, 'passive/list'
         ).then(f => f.Fattura);
     },
