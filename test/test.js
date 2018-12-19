@@ -36,7 +36,7 @@ test('active/list', function (t) {
 });
 
 test('passive/list', function (t) {
-    tinv.listPassive(true, new Date('2010-01-01T00:00Z'), new Date('2019-01-01T00:00Z')
+    tinv.listPassive(true, new Date('2010-01-01T00:00Z'), new Date('2018-12-15T00:00Z')
     ).then(function (docs) {
         t.equal(docs.length, 5, 'number of documents found');
         t.deepEqual(docs.map(f => f.IdentificativoSdI),
