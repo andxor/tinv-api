@@ -1,13 +1,16 @@
 {
-  "name": "fatturapa-api",
+  "name": "tinv-api",
   "version": "0.2.0",
-  "description": "Wrapper around TInv (FatturaPA & B2B) web services",
+  "description": "Wrapper around TInv (FatturaPA & B2B) webservices",
   "main": "index.js",
-  "homepage": "https://github.com/andxor/fatturapa-api",
+  "homepage": "https://github.com/andxor/tinv-api",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andxor/fatturapa-api.git"
+    "url": "https://github.com/andxor/tinv-api.git"
   },
+  "bugs": "https://github.com/andxor/tinv-api/issues",
+  "author": "Lapo Luchini <l.luchini@andxor.it>",
+  "license": "ISC",
   "engines": {
     "node": ">=4.3.2"
   },
@@ -23,9 +26,6 @@
   "files": [
     "index.js"
   ],
-  "bugs": "https://github.com/andxor/fatturapa-api/issues",
-  "author": "Lapo Luchini <l.luchini@andxor.it>",
-  "license": "ISC",
   "scripts": {
     "test": "node test/test.js local | tap-spec",
     "test-update": "rm -rf test/nock ; node test/test.js | tap-spec"

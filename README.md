@@ -1,4 +1,4 @@
-fatturapa-api
+tinv-api
 =============
 
-node wrapper around Andxor's FatturaPA WSDL
+node wrapper around Andxor's TInv (FatturaPA & B2B) webservices
