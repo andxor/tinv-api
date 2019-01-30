@@ -1,12 +1,13 @@
 /*!
  * node FatturaPA API wrapper
- * (c) 2016-2018 Lapo Luchini <l.luchini@andxor.it>
+ * (c) 2016-2019 Lapo Luchini <l.luchini@andxor.it>
  */
 'use strict';
 
 const
     Bluebird = require('bluebird'),
     req = require('superagent'),
+    reProto = /^(https?):/,
     reFilename = /filename="?([^"]+)"?/;
 
 function FatturaPA(address, cedente, password) {
@@ -18,6 +19,14 @@ function FatturaPA(address, cedente, password) {
         },
         'Password': password,
     };
+    const proto = reProto.exec(address);
+    if (!proto)
+        throw new Error('Unsupported protocol.');
+    this.agent = new (require(proto[1])).Agent({
+        keepAlive: true, // keep alive connections for reuse
+        keepAliveMsecs: 5000, // for up to 5 seconds
+        maxSockets: 4, // do not use more than 4 parallel connections
+    });
 }
 
 FatturaPA.Promise = Bluebird.getNewLibraryCopy();
@@ -47,6 +56,7 @@ FatturaPA.prototype = {
             throw new Error('This method has not been upgraded to new version yet.');
         return FatturaPA.Promise.resolve(req
             .post(this.root + path)
+            .agent(this.agent)
             .send(data)
         ).catch(function (err) {
             if (err.status == 404)
@@ -59,6 +69,7 @@ FatturaPA.prototype = {
     serviceBuf: function(data, path) {
         return FatturaPA.Promise.resolve(req
             .post(this.root + path)
+            .agent(this.agent)
             .buffer(true).parse(req.parse.image) // necessary to have resp.body as a Buffer
             .send(data)
         ).catch(function (err) {
