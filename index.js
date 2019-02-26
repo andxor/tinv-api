@@ -126,7 +126,7 @@ FatturaPA.prototype = {
         // console.log('Sending:', data);
         return this.service(data, 'active/send'
         ).then(function (result) {
-            return result.body.ProgressivoInvio;
+            return result.ProgressivoInvio;
         });
     },
     changePassword: function (newpassw) {
@@ -136,7 +136,7 @@ FatturaPA.prototype = {
         };
         return this.service(data, 'A', 'CambiaPassword'
         ).then(function (result) {
-            return result.body.PasswordCambiata;
+            return result.PasswordCambiata;
         });
     },
     setSignature: function (alias, newpassw) {
@@ -147,7 +147,7 @@ FatturaPA.prototype = {
         };
         return this.service(data, 'A', 'ImpostaFirma'
         ).then(function (result) {
-            return result.body.FirmaImpostata;
+            return result.FirmaImpostata;
         });
     },
     notifyFE: function (identificativoSdI, posizione) {
@@ -158,8 +158,7 @@ FatturaPA.prototype = {
         };
         return this.service(data, 'P', 'NotificaFE'
         ).then(function (result) {
-            console.log(result);
-            return result.body.Notifier;
+            return result.Notifier;
         });
     },
     AttnotifyFE: function (identificativoSdI) {
@@ -170,7 +169,7 @@ FatturaPA.prototype = {
         return this.service(data, 'A', 'AttNotificaFE'
         ).then(function (result) {
             console.log(result);
-            return result.body.AttNotifier;
+            return result.AttNotifier;
         });
     },
     download: function(progressivoInvio, progressivoRicezione, minimal) {
@@ -236,9 +235,7 @@ FatturaPA.prototype = {
         };
         return this.service(data, 'P', 'Accept'
         ).then(function (result) {
-            console.log('Dati Passati: ' + result.status);
-            console.log(result);
-            return result.body.Accepted;
+            return result.Accepted;
         });
     },
     store: function (identificativoSdI) {
@@ -248,8 +245,7 @@ FatturaPA.prototype = {
         };
         return this.service(data, 'P', 'Store'
         ).then(function (result) {
-            console.log(result);
-            return result.body.Stored;
+            return result.Stored;
         });
     }
 };

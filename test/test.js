@@ -11,6 +11,20 @@ const
         mode: testMode,
     });
 
+test('active/send', function (t) {
+    tinv.send(
+        '123456',
+        '<CessionarioCommittente><DatiAnagrafici><IdFiscaleIVA><IdPaese>IT</IdPaese><IdCodice>00356680397</IdCodice></IdFiscaleIVA><CodiceFiscale>00356680397</CodiceFiscale><Anagrafica><Denominazione>PROVINCIA DI RAVENNA LLPP</Denominazione></Anagrafica></DatiAnagrafici><Sede><Indirizzo>P.ZZA DEI CADUTI 2/4</Indirizzo><CAP>48121</CAP><Comune>RAVENNA</Comune><Provincia>RA</Provincia><Nazione>IT</Nazione></Sede></CessionarioCommittente>',
+        '<FatturaElettronicaBody><DatiGenerali><DatiGeneraliDocumento><TipoDocumento>TD01</TipoDocumento><Divisa>EUR</Divisa><Data>2016-01-01</Data><Numero>01</Numero><ImportoTotaleDocumento>12.20</ImportoTotaleDocumento><Causale>Fattura di vendita</Causale><Art73>SI</Art73></DatiGeneraliDocumento></DatiGenerali><DatiBeniServizi><DettaglioLinee><NumeroLinea>1</NumeroLinea><Descrizione>INTERVENTI</Descrizione><Quantita>1.00</Quantita><PrezzoUnitario>10.00</PrezzoUnitario><PrezzoTotale>10.00</PrezzoTotale><AliquotaIVA>22.00</AliquotaIVA></DettaglioLinee><DatiRiepilogo><AliquotaIVA>22.00</AliquotaIVA><ImponibileImporto>10.00</ImponibileImporto><Imposta>2.20</Imposta><EsigibilitaIVA>S</EsigibilitaIVA></DatiRiepilogo></DatiBeniServizi><DatiPagamento><CondizioniPagamento>TP02</CondizioniPagamento><DettaglioPagamento><ModalitaPagamento>MP05</ModalitaPagamento><DataScadenzaPagamento>2016-01-01</DataScadenzaPagamento><ImportoPagamento>12.20</ImportoPagamento><IBAN>IT77B0200000000000000000000</IBAN></DettaglioPagamento></DatiPagamento></FatturaElettronicaBody>'
+    ).then(function (progressivo) {
+        t.equal(progressivo.length, 5, 'progressivo is valid');
+    }).catch(function (err) {
+        t.fail(err);
+    }).finally(function () {
+        t.end();
+    });
+});
+
 test('active/list', function (t) {
     tinv.list(new Date('2010-01-01T00:00Z'), new Date('2018-01-01T00:00Z')
     ).then(function (docs) {
