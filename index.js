@@ -10,7 +10,7 @@ const
     reProto = /^(https?):/,
     reFilename = /filename="?([^"]+)"?/;
 
-function FatturaPA(address, cedente, password) {
+function FatturaPA(address, cedente, password, gestione) {
     this.root = address + 'userREST/';
     this.auth = {
         'Cedente': {
@@ -19,6 +19,11 @@ function FatturaPA(address, cedente, password) {
         },
         'Password': password,
     };
+    if (gestione)
+        this.auth.Gestione = {
+            'IdPaese': 'IT',
+            'IdCodice': gestione,
+        };
     const proto = reProto.exec(address);
     if (!proto)
         throw new Error('Unsupported protocol.');
