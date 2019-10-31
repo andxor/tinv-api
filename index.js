@@ -68,6 +68,8 @@ FatturaPA.prototype = {
                 throw new Error('The configured REST endpoint does not exist.');
             if ('error' in err.response.body)
                 throw new Error(err.response.body.error);
+            if ('text' in err.response.error)
+                throw new Error(err.response.error.text);
             throw new Error('Server error (status=' + err.status + ').');
         }).then(r => massage(r.body));
     },
@@ -252,6 +254,14 @@ FatturaPA.prototype = {
         ).then(function (result) {
             return result.Stored;
         });
+    },
+    report: function (giorno, periodo) {
+        let data = {
+            'Autenticazione': this.auth,
+            'Giorno': giorno,   // yyyy-mm-dd
+            'Periodo': periodo, // Giorno/Settimana/Mese/Anno
+        };
+        return this.service(data, 'report');
     }
 };
 
