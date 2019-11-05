@@ -11,6 +11,13 @@ const
     reFilename = /filename="?([^"]+)"?/;
 
 function FatturaPA(address, cedente, password, gestione) {
+    if (address instanceof FatturaPA) {
+        // copy constructor
+        this.root = address.root;
+        this.auth = address.auth;
+        this.agent = address.agent;
+        return;
+    }
     this.root = address + 'userREST/';
     this.auth = {
         'Cedente': {
@@ -56,6 +63,14 @@ function massage(json) {
 }
 
 FatturaPA.prototype = {
+    gestione: function (gestione) {
+        const tinv = new FatturaPA(this);
+        tinv.auth.Gestione = {
+            'IdPaese': 'IT',
+            'IdCodice': gestione,
+        };
+        return tinv;
+    },
     service: function(data, path) {
         if (path == 'A' || path == 'P')
             throw new Error('This method has not been upgraded to new version yet.');

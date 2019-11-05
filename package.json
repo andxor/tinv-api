@@ -1,6 +1,6 @@
 {
   "name": "tinv-api",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "Wrapper around TInv (FatturaPA & B2B) webservices",
   "main": "index.js",
   "homepage": "https://github.com/andxor/tinv-api",
