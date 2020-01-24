@@ -139,7 +139,6 @@ FatturaPA.prototype = {
             'Autenticazione': this.auth,
         };
         data.DatiFatturaBodyDTE = body;
-        // console.log('Sending:', data);
         return this.service(data, 'corrispettivi/send'
         ).then(function (result) {
             return result.ProgressivoInvio;
