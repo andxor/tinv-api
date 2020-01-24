@@ -134,6 +134,17 @@ FatturaPA.prototype = {
             return result.ProgressivoInvio;
         });
     },
+    sendCorrispettivo: function (body) {
+        let data = {
+            'Autenticazione': this.auth,
+        };
+        data.DatiFatturaBodyDTE = body;
+        // console.log('Sending:', data);
+        return this.service(data, 'corrispettivi/send'
+        ).then(function (result) {
+            return result.ProgressivoInvio;
+        });
+    },
     changePassword: function (newpassw) {
         let data = {
             'Autenticazione': this.auth,
