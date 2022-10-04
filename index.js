@@ -1,6 +1,6 @@
 /*!
  * node FatturaPA API wrapper
- * (c) 2016-2019 Lapo Luchini <l.luchini@andxor.it>
+ * (c) 2016-2021 Lapo Luchini <l.luchini@andxor.it>
  */
 'use strict';
 
