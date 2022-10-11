@@ -11,6 +11,13 @@ const
     reFilename = /filename="?([^"]+)"?/;
 
 function FatturaPA(address, cedente, password, gestione) {
+    if (address instanceof FatturaPA) {
+        // copy constructor
+        this.root = address.root;
+        this.auth = address.auth;
+        this.agent = address.agent;
+        return;
+    }
     this.root = address + 'userREST/';
     this.auth = {
         'Cedente': {
@@ -56,6 +63,14 @@ function massage(json) {
 }
 
 FatturaPA.prototype = {
+    gestione: function (gestione) {
+        const tinv = new FatturaPA(this);
+        tinv.auth.Gestione = {
+            'IdPaese': 'IT',
+            'IdCodice': gestione,
+        };
+        return tinv;
+    },
     service: function(data, path) {
         if (path == 'A' || path == 'P')
             throw new Error('This method has not been upgraded to new version yet.');
@@ -68,6 +83,8 @@ FatturaPA.prototype = {
                 throw new Error('The configured REST endpoint does not exist.');
             if ('error' in err.response.body)
                 throw new Error(err.response.body.error);
+            if ('text' in err.response.error)
+                throw new Error(err.response.error.text);
             throw new Error('Server error (status=' + err.status + ').');
         }).then(r => massage(r.body));
     },
@@ -145,6 +162,7 @@ FatturaPA.prototype = {
             'Autenticazione': this.auth,
         };
         data.DatiFatturaBodyDTE = body;
+        // console.log('Sending:', data);
         return this.service(data, 'corrispettivi/send'
         ).then(function (result) {
             return result.ProgressivoInvio;
@@ -268,6 +286,14 @@ FatturaPA.prototype = {
         ).then(function (result) {
             return result.Stored;
         });
+    },
+    report: function (giorno, periodo) {
+        let data = {
+            'Autenticazione': this.auth,
+            'Giorno': giorno,   // yyyy-mm-dd
+            'Periodo': periodo, // Giorno/Settimana/Mese/Anno
+        };
+        return this.service(data, 'report');
     }
 };
 
