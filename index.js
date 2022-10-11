@@ -296,5 +296,4 @@ FatturaPA.prototype = {
         return this.service(data, 'report');
     }
 };
-
 module.exports = FatturaPA;
