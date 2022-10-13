@@ -1,6 +1,6 @@
 /*!
  * node FatturaPA API wrapper
- * (c) 2016-2019 Lapo Luchini <l.luchini@andxor.it>
+ * (c) 2016-2022 Lapo Luchini <l.luchini@andxor.it>
  */
 'use strict';
 
@@ -129,7 +129,7 @@ FatturaPA.prototype = {
         return this.service(data, 'passive/list'
         ).then(f => f.Fattura);
     },
-    send: function (destinatario, committente, body) {
+    send: function (destinatario, committente, body, override_ced, soggetto_emittente) {
         let data = {
             'Autenticazione': this.auth,
         };
@@ -137,6 +137,12 @@ FatturaPA.prototype = {
             data.CodiceDestinatario = destinatario;
         else
             data.PECDestinatario = destinatario;
+        if (typeof override_ced == 'string')
+            data.OverrideCedenteStr = override_ced;
+        else
+            data.OverrideCedente = override_ced;
+        if(soggetto_emittente != null)
+                data.SoggettoEmittente = soggetto_emittente;
         if (typeof committente == 'string')
             data.CessionarioCommittenteStr = committente;
         else
@@ -147,6 +153,17 @@ FatturaPA.prototype = {
             data.FatturaElettronicaBody = body;
         // console.log('Sending:', data);
         return this.service(data, 'active/send'
+        ).then(function (result) {
+            return result.ProgressivoInvio;
+        });
+    },
+    sendCorrispettivo: function (body) {
+        let data = {
+            'Autenticazione': this.auth,
+        };
+        data.DatiFatturaBodyDTE = body;
+        // console.log('Sending:', data);
+        return this.service(data, 'corrispettivi/send'
         ).then(function (result) {
             return result.ProgressivoInvio;
         });
@@ -279,5 +296,4 @@ FatturaPA.prototype = {
         return this.service(data, 'report');
     }
 };
-
 module.exports = FatturaPA;
