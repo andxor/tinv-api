@@ -122,7 +122,7 @@ FatturaPA.prototype = {
         return this.service(data, 'passive/list'
         ).then(f => f.Fattura);
     },
-    send: function (destinatario, committente, body, override_ced, soggetto_emittente) {
+    send: function (destinatario, cedente_prestatore, committente, body, ruolo_richiedente, soggetto_emittente, terzo_intermediario) {
         let data = {
             'Autenticazione': this.auth,
         };
@@ -130,12 +130,16 @@ FatturaPA.prototype = {
             data.CodiceDestinatario = destinatario;
         else
             data.PECDestinatario = destinatario;
-        if (typeof override_ced == 'string')
-            data.OverrideCedenteStr = override_ced;
-        else
-            data.OverrideCedente = override_ced;
+        if (ruolo_richiedente != null)
+            data.RuoloRichiedente = ruolo_richiedente;
         if(soggetto_emittente != null)
-                data.SoggettoEmittente = soggetto_emittente;
+            data.SoggettoEmittente = soggetto_emittente;
+        if(terzo_intermediario != null)
+            data.TerzoIntermediarioOSoggettoEmittente = terzo_intermediario;
+        if (typeof cedente_prestatore == 'string')
+            data.CedentePrestatoreStr = cedente_prestatore;
+        else
+            data.CedentePrestatore = cedente_prestatore;
         if (typeof committente == 'string')
             data.CessionarioCommittenteStr = committente;
         else
