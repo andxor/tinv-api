@@ -12,11 +12,10 @@
   "author": "Lapo Luchini <l.luchini@andxor.it>",
   "license": "ISC",
   "engines": {
-    "node": ">=4.3.2"
+    "node": ">=6.17.1"
   },
   "dependencies": {
-    "bluebird": "^3.5.3",
-    "superagent": "^4.0.0"
+    "superagent": "^8.1.2"
   },
   "devDependencies": {
     "tap-spec": "^5.0.0",
@@ -31,11 +30,12 @@
     "test-update": "rm -rf test/nock ; node test/test.js | tap-spec"
   },
   "eslintConfig": {
-    "parserOptions": {
-      "ecmaVersion": 6
-    },
     "env": {
-      "node": true
+      "node": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "ecmaVersion": 2020
     },
     "extends": [
       "eslint:recommended"

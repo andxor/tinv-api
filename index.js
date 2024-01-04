@@ -1,11 +1,11 @@
 /*!
- * node FatturaPA API wrapper
- * (c) 2016-2022 Lapo Luchini <l.luchini@andxor.it>
+ * node TInv (FatturaPA) API wrapper
+ * (c) 2016-2024 Lapo Luchini <l.luchini@andxor.it>
+ * (c) 2020      Luca Palmulli <l.palmulli@andxor.it>
  */
 'use strict';
 
 const
-    Bluebird = require('bluebird'),
     req = require('superagent'),
     reProto = /^(https?):/,
     reFilename = /filename="?([^"]+)"?/;
@@ -41,14 +41,7 @@ function FatturaPA(address, cedente, password, gestione) {
     });
 }
 
-FatturaPA.Promise = Bluebird.getNewLibraryCopy();
-
-FatturaPA.Promise.config({
-    warnings: true,
-    longStackTraces: true,
-    cancellation: false,
-    monitoring: false,
-});
+FatturaPA.Promise = Promise;
 
 function massage(json) {
     for (const k in json) {
