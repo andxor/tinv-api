@@ -149,7 +149,7 @@ FatturaPA.prototype = {
         else
             data.FatturaElettronicaBody = body;
         // console.log('Sending:', data);
-        return this.service(data, 'active/send'
+        return this.service(data, 'active/sendExt'
         ).then(function (result) {
             return result.ProgressivoInvio;
         });
