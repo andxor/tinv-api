@@ -6,7 +6,7 @@
   "homepage": "https://github.com/andxor/tinv-api",
   "repository": {
     "type": "git",
-    "url": "https://github.com/andxor/tinv-api.git"
+    "url": "git+https://github.com/andxor/tinv-api.git"
   },
   "bugs": "https://github.com/andxor/tinv-api/issues",
   "author": "Lapo Luchini <l.luchini@andxor.it>",
